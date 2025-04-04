@@ -1,16 +1,27 @@
-from flask import Flask, request, jsonify
+import streamlit as st
 import joblib
 import pandas as pd
 
-app = Flask(__name__)
+# Load model
 model = joblib.load('course_recommender.pkl')
 
-@app.route('/predict', methods=['POST'])
-def predict():
-    data = request.get_json()
-    df = pd.DataFrame([data])
-    prediction = model.predict(df)
-    return jsonify({'predicted_rating': float(prediction[0])})
+# App UI
+st.title("Course Recommendation System")
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+# Input fields
+age = st.number_input("Age", min_value=15, max_value=50, value=20)
+branch = st.selectbox("College Branch", ["CSE", "ECE", "ME", "CE", "EE"])  # modify list as needed
+sem = st.selectbox("Semester", ["1", "2", "3", "4", "5", "6", "7", "8"])
+
+# Add more inputs if needed
+
+# Predict
+if st.button("Predict Rating"):
+    input_df = pd.DataFrame([{
+        "age": age,
+        "clgbranch": branch,
+        "clgsem": sem
+        # include other required features
+    }])
+    prediction = model.predict(input_df)
+    st.success(f"Predicted Course Rating: {prediction[0]:.2f}")

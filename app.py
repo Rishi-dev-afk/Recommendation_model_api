@@ -2,26 +2,26 @@ import streamlit as st
 import joblib
 import pandas as pd
 
-# Load model
+# Load the trained model
 model = joblib.load('course_recommender.pkl')
 
-# App UI
-st.title("Course Recommendation System")
+st.title("Course Rating Predictor")
 
-# Input fields
-age = st.number_input("Age", min_value=15, max_value=50, value=20)
-branch = st.selectbox("College Branch", ["CSE", "ECE", "ME", "CE", "EE"])  # modify list as needed
-sem = st.selectbox("Semester", ["1", "2", "3", "4", "5", "6", "7", "8"])
+# Inputs
+video_title = st.text_input("Video Title")
+clgyear = st.selectbox("College Year", ["First", "Second", "Third", "Fourth"])
+clgsem = st.number_input("Semester", min_value=1, max_value=8)
 
-# Add more inputs if needed
-
-# Predict
 if st.button("Predict Rating"):
+    # Match the exact column names your model expects
     input_df = pd.DataFrame([{
-        "age": age,
-        "clgbranch": branch,
-        "clgsem": sem
-        # include other required features
+        "video_title": video_title,
+        "clgyear": clgyear,
+        "clgsem": clgsem
     }])
-    prediction = model.predict(input_df)
-    st.success(f"Predicted Course Rating: {prediction[0]:.2f}")
+
+    try:
+        prediction = model.predict(input_df)
+        st.success(f"Predicted Course Rating: {prediction[0]:.2f}")
+    except Exception as e:
+        st.error(f"Error: {e}")
